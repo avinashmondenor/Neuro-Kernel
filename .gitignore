@@ -3,3 +3,11 @@ __pycache__/
 *.pyc
 .ipynb_checkpoints/
 
+
+# Local Python environment
+.venv/
+
+# Local backups
+backup_before_split_fix/
+src/*.bak
+src/*.before_kthread_fix

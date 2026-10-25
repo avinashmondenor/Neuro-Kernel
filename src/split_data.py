@@ -6,8 +6,8 @@ print("       NeuroKernel Train/Test Split")
 print("=" * 60)
 
 # Load prepared data
-X = pd.read_csv("X_features.csv")
-y = pd.read_csv("y_labels.csv")["label"]
+X = pd.read_csv("data/X_features.csv")
+y = pd.read_csv("data/y_labels.csv")["label"]
 
 print("\nOriginal data:")
 print("X:", X.shape)
@@ -37,16 +37,16 @@ print("\nTesting class distribution:")
 print(y_test.value_counts())
 
 # Save the split datasets
-X_train.to_csv("X_train.csv", index=False)
-X_test.to_csv("X_test.csv", index=False)
-y_train.to_csv("y_train.csv", index=False)
-y_test.to_csv("y_test.csv", index=False)
+X_train.to_csv("data/X_train.csv", index=False)
+X_test.to_csv("data/X_test.csv", index=False)
+y_train.to_csv("data/y_train.csv", index=False)
+y_test.to_csv("data/y_test.csv", index=False)
 
 print("\nSaved:")
-print("X_train.csv")
-print("X_test.csv")
-print("y_train.csv")
-print("y_test.csv")
+print("data/X_train.csv")
+print("data/X_test.csv")
+print("data/y_train.csv")
+print("data/y_test.csv")
 
 print("\n" + "=" * 60)
 print("Train/test split completed")

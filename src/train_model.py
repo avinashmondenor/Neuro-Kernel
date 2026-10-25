@@ -13,11 +13,11 @@ print("        NeuroKernel Random Forest Training")
 print("=" * 60)
 
 # Load training data
-X_train = pd.read_csv("X_train.csv")
-X_test = pd.read_csv("X_test.csv")
+X_train = pd.read_csv("data/X_train.csv")
+X_test = pd.read_csv("data/X_test.csv")
 
-y_train = pd.read_csv("y_train.csv")["label"]
-y_test = pd.read_csv("y_test.csv")["label"]
+y_train = pd.read_csv("data/y_train.csv")["label"]
+y_test = pd.read_csv("data/y_test.csv")["label"]
 
 print("\nTraining data:")
 print(X_train.shape)
@@ -77,10 +77,10 @@ importance = importance.sort_values(
 print(importance.to_string(index=False))
 
 # Save model
-joblib.dump(model, "neurokernel_random_forest.pkl")
+joblib.dump(model, "models/neurokernel_random_forest.pkl")
 
 print("\nModel saved as:")
-print("neurokernel_random_forest.pkl")
+print("models/neurokernel_random_forest.pkl")
 
 print("\n" + "=" * 60)
 print("NeuroKernel model training completed")

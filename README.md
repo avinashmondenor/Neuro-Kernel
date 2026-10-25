@@ -1,138 +1,103 @@
-
+cat > README.md <<'EOF'
 # NeuroKernel
-### AI-Based Linux Process Anomaly Detection
-
-NeuroKernel is a machine learning-based system designed to detect anomalous behavior in Linux processes using process-level system telemetry.
-
-The system analyzes CPU utilization, memory consumption, thread activity, context switches, and disk I/O to distinguish normal process behavior from potentially anomalous activity.
-
-The current implementation includes dataset preparation, preprocessing, a trained Random Forest classifier, and baseline model evaluation for binary anomaly detection.
 
 ## Overview
 
-Linux processes exhibit different resource utilization patterns depending on their workloads. Unusual resource consumption may indicate unexpected behavior, resource-intensive operations, or potentially problematic processes.
+NeuroKernel is a machine-learning-based system anomaly detection project designed to monitor processes and identify potentially unusual system behaviour.
 
-NeuroKernel applies machine learning to process telemetry to identify anomalous behavior and establish a foundation for intelligent Linux process monitoring.
+The project collects process telemetry, uses a trained machine-learning model to generate anomaly predictions, and provides tools for analysing model performance.
 
-**Current classification:**
+### Live Process Monitoring Dashboard
 
-| Label | Meaning |
-|---|---|
-| `0` | Normal |
-| `1` | Anomaly |
+The project includes a Streamlit-based dashboard connected to the live process monitor. It displays running processes, system resource measurements, and machine-learning predictions.
+
+Dashboard features include:
+- Displaying running processes and their process IDs.
+- Viewing CPU usage, memory usage, thread counts, and available telemetry.
+- Displaying Normal, Anomaly, and Warming up statuses.
+- Showing anomaly probabilities when available.
+- Filtering processes by predicted status.
+- Selecting individual processes to inspect detailed telemetry.
+- Manually refreshing the dashboard to request an updated process scan.
+
+An anomaly prediction indicates unusual behaviour according to the model; it does not prove that a process is malicious.
 
 ## System Architecture
 
-```text
-Linux Processes
-       |
-       v
-Process Telemetry Collection
-       |
-       v
-Feature Extraction & Preprocessing
-       |
-       v
-Random Forest Classifier
-       |
-       v
-Normal / Anomaly Prediction
-       |
-       v
-Anomaly Investigation
-       |
-       v
-Monitoring Dashboard
-```
+NeuroKernel consists of the following main components:
 
-The dataset preparation, baseline classifier, and offline evaluation pipeline are implemented. Live telemetry integration and dashboard functionality are separate system integration components.
+1. **Data Collection:** Collects system and process telemetry.
+2. **Dataset Preparation:** Prepares datasets and separates data for model training and evaluation.
+3. **Machine Learning:** Uses the trained model to predict whether process behaviour is normal or anomalous.
+4. **Model Evaluation:** Analyses model performance using the available evaluation tools.
+5. **Live Monitoring:** Collects telemetry from currently running processes and obtains predictions from the trained model.
+6. **Dashboard:** Displays process information, resource usage, predictions, and detailed telemetry through a Streamlit interface.
 
-## Machine Learning Model
+### Dashboard Workflow
 
-**Algorithm:** Random Forest Classifier
+1. The live monitor scans running processes.
+2. Available telemetry is collected and prepared for prediction.
+3. The trained model generates predictions when sufficient measurements are available.
+4. Streamlit displays the results in a process table.
+5. Users can filter processes, inspect individual processes, and click the manual refresh button to request a new scan.
 
-The model uses 10 numerical features extracted from process telemetry.
+## Machine Learning Models
 
-| Feature | Description |
-|---|---|
-| `cpu_percent` | CPU utilization of a process |
-| `memory_mb` | Memory consumed in megabytes |
-| `memory_percent` | Percentage of system memory used |
-| `threads` | Number of threads in a process |
-| `context_switches` | Process context-switch activity |
-| `cpu_user_time` | CPU time spent executing user-space code |
-| `cpu_system_time` | CPU time spent executing kernel-space code |
-| `cpu_delta` | Change in CPU usage over the sampling interval |
-| `read_bytes_per_sec` | Disk read rate |
-| `write_bytes_per_sec` | Disk write rate |
+The repository contains a trained Random Forest model:
+
+- `models/neurokernel_random_forest.pkl`
+
+The live monitoring workflow uses the model loaded by the project's monitor implementation.
+
+The repository also includes training and evaluation scripts. Refer to those scripts and the existing model documentation for the exact model configuration and training parameters.
 
 ## Dataset
 
-The dataset combines normal process telemetry with CPU-, memory-, and disk-related anomalous observations.
+The `data/` directory contains the datasets used by the project.
 
-| Dataset Property | Value |
-|---|---:|
-| Total observations | 342,752 |
-| Total columns | 19 |
-| Normal observations | 132,816 |
-| Anomalous observations | 209,936 |
-| Training samples | 274,201 |
-| Testing samples | 68,551 |
-| Train-test split | 80:20 |
-| Split strategy | Stratified |
+Available files include:
 
-The dataset was prepared and divided into training and testing subsets for model development and evaluation.
+- `neurokernel_final.csv`
+- `X_features.csv`
+- `y_labels.csv`
+- `X_train.csv`
+- `X_test.csv`
+- `y_train.csv`
+- `y_test.csv`
+
+Refer to the dataset preparation and training scripts for details about the data processing workflow and feature definitions.
 
 ## Model Performance
 
-The baseline Random Forest classifier was evaluated on a held-out test dataset.
+Model performance should be reported using the results generated by the project's evaluation scripts.
 
-| Metric | Reported Score |
-|---|---:|
-| Accuracy | 74.72% |
-| Anomaly Precision | 0.82 |
-| Anomaly Recall | 0.75 |
-| Anomaly F1-score | 0.78 |
+Refer to the evaluation output for the measured metrics. No performance values are stated here because they should be taken from the actual experimental results.
 
-### Confusion Matrix
+## Confusion Matrix
 
-| Actual Class | Predicted Normal | Predicted Anomaly |
-|---|---:|---:|
-| Normal | 19,590 | 6,973 |
-| Anomaly | 10,355 | 31,633 |
+The confusion matrix compares model predictions against the corresponding reference labels.
 
-**Note:** The reported metrics and confusion matrix should be reconciled against the saved test predictions before publication. The matrix currently implies approximately 74.0% accuracy, rather than 74.72%.
+Use the model evaluation script to generate or inspect the confusion matrix. Report the actual results produced by the evaluation rather than estimated values.
 
-### Feature Importance
+## Feature Importance
 
-The current feature-importance analysis identified the following features as the most influential in the trained model:
+Feature importance can help identify which input features contribute most to the trained model's predictions.
 
-1. `context_switches`
-2. `cpu_system_time`
-3. `cpu_user_time`
-4. `memory_mb`
-5. `memory_percent`
-6. `threads`
-7. `cpu_percent`
-8. `cpu_delta`
-9. `write_bytes_per_sec`
-10. `read_bytes_per_sec`
-
-These rankings reflect the current model and dataset; they do not independently establish causation or anomaly severity.
+Use the project's model analysis tools to inspect the feature importance results. Interpret them in the context of the dataset and the model being evaluated.
 
 ## Technology Stack
 
-- **Python** — Machine learning and data processing
-- **Pandas** — Dataset manipulation
-- **NumPy** — Numerical computation
-- **Scikit-learn** — Model training and evaluation
-- **Linux** — Target operating system
-- **Joblib / Pickle** — Model persistence, depending on the implementation
+- **Python:** Main programming language.
+- **Pandas:** Data handling and tabular processing.
+- **Scikit-learn:** Machine-learning model training and prediction.
+- **Streamlit:** Interactive live monitoring dashboard.
+- **Linux `/proc` filesystem:** Source of process telemetry where supported by the monitor.
+- **Git:** Source code version control.
 
 ## Repository Structure
 
 ```text
-NeuroKernel/
+Neuro-Kernel/
 ├── data/
 │   ├── neurokernel_final.csv
 │   ├── X_features.csv
@@ -147,11 +112,12 @@ NeuroKernel/
 │   ├── collect.py
 │   ├── split_data.py
 │   ├── train_model.py
-│   └── analyze_model.py
+│   ├── analyze_model.py
+│   ├── live_monitor.py
+│   └── dashboard.py
 ├── requirements.txt
 ├── .gitignore
 └── README.md
-```
 
 ## Getting Started
 
@@ -214,5 +180,57 @@ The trained model is available as `neurokernel_random_forest.pkl` for subsequent
 NeuroKernel provides a machine learning foundation for Linux process anomaly detection, with the broader objective of integrating process telemetry, anomaly investigation, and monitoring into a unified system.
 
 ---
+Current Status
+Live Monitoring Dashboard
+
+The Streamlit dashboard has been implemented with the existing live process monitor.
+
+Implemented dashboard functionality includes:
+
+Live process scanning when requested.
+Display of process and resource information.
+Display of machine-learning prediction status.
+Anomaly probability display when available.
+Process filtering by prediction status.
+Detailed inspection of selected processes.
+Display of available telemetry notes.
+Manual refresh through a dashboard button.
+Basic error handling for monitor initialization and scanning.
+Remaining Validation
+Verify the dashboard works correctly in the target environment.
+Test manual refresh and process filtering.
+Validate prediction behaviour against the actual model and telemetry.
+Coordinate with the team to integrate any separate explanation or heuristic components.
+Confirm the model metrics and documentation against actual evaluation results.
+Test the complete project end to end.
+EOF
+
+### Step 3: Check the updated README
+
+Run:
+
+```bash
+cat README.md
+
+To check which files have changed:
+
+git status
+
+Your original README is preserved as README_backup.md.
+
+Step 4: Verify your dashboard still works
+
+Run:
+
+streamlit run src/dashboard.py
+
+Check that the dashboard opens and that the manual refresh button works.
+
+One important note: I included the dashboard features we implemented, but the model performance section intentionally doesn't invent accuracy, precision, recall, or confusion matrix values. Also, the repository structure in your screenshot doesn't show live_monitor.py or dashboard.py; those files were part of our previous work, so verify they exist with:
+
+ls src
+
+If you want to keep the README perfectly aligned with your team's actual implementation, we should verify the model details and measured results before you commit the changes.
 
 **NeuroKernel — Intelligent analysis of Linux process behavior.**
+nano README.md

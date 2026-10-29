@@ -1,0 +1,75 @@
+import streamlit as st
+import pandas as pd
+
+st.set_page_config(
+    page_title="NeuroKernel",
+    page_icon="🧠",
+    layout="wide"
+)
+
+st.title("🧠 NeuroKernel")
+st.subheader("AI-Based Linux Process Anomaly Detection")
+
+st.markdown(
+    "Monitor Linux processes, resource utilization, "
+    "and machine-learning predictions."
+)
+
+st.sidebar.header("Dashboard Settings")
+
+refresh_interval = st.sidebar.slider(
+    "Refresh interval (seconds)",
+    min_value=2,
+    max_value=30,
+    value=5
+)
+
+st.sidebar.write(
+    f"Selected refresh interval: {refresh_interval} seconds"
+)
+
+st.info(
+    "Dashboard interface initialized. "
+    "Live monitoring integration is the next step."
+)
+
+col1, col2, col3, col4 = st.columns(4)
+
+col1.metric("Processes Scanned", "0")
+col2.metric("Normal", "0")
+col3.metric("Anomalous", "0")
+col4.metric("Last Scan", "Not started")
+
+st.subheader("Live Process Monitoring")
+
+sample_data = pd.DataFrame(
+    [
+        {
+            "PID": 1001,
+            "Process": "python",
+            "CPU %": 20.5,
+            "Memory MB": 150.0,
+            "Prediction": "Normal",
+            "Anomaly Probability": 0.12
+        },
+        {
+            "PID": 1002,
+            "Process": "firefox",
+            "CPU %": 76.2,
+            "Memory MB": 450.0,
+            "Prediction": "Anomalous",
+            "Anomaly Probability": 0.87
+        }
+    ]
+)
+
+st.dataframe(
+    sample_data,
+    use_container_width=True,
+    hide_index=True
+)
+
+st.caption(
+    "Sample records only. These are not live process predictions."
+)
+

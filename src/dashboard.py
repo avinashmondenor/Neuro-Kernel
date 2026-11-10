@@ -13,6 +13,7 @@ if str(SRC_DIR) not in sys.path:
     sys.path.insert(0, str(SRC_DIR))
 
 from live_monitor import LiveProcessMonitor
+from member4_integration import Member4Investigator
 
 
 st.set_page_config(
@@ -27,7 +28,8 @@ st.subheader("Live Process Anomaly Detection")
 st.markdown(
     """
     Monitor running processes using live system telemetry and the
-    existing trained machine-learning model.
+    existing trained machine-learning model. Member 4's investigation layer
+    adds a likely resource category and a human-readable explanation.
     """
 )
 
@@ -38,6 +40,12 @@ def get_monitor():
     return LiveProcessMonitor()
 
 
+@st.cache_resource
+def get_investigator():
+    """Build the resource baseline once from normal training samples."""
+    return Member4Investigator(PROJECT_DIR)
+
+
 try:
     monitor = get_monitor()
 except Exception as exc:
@@ -45,6 +53,12 @@ except Exception as exc:
     st.exception(exc)
     st.stop()
 
+try:
+    investigator = get_investigator()
+except Exception as exc:
+    st.error("Could not initialize Member 4 anomaly investigation.")
+    st.exception(exc)
+    st.stop()
 
 
 def live_dashboard():
@@ -52,8 +66,9 @@ def live_dashboard():
 
     try:
         records = monitor.scan()
+        records = investigator.investigate_many(records)
     except Exception as exc:
-        st.error("The live process scan failed.")
+        st.error("The live process scan or anomaly investigation failed.")
         st.exception(exc)
         return
 
@@ -82,7 +97,6 @@ def live_dashboard():
 
     st.subheader("Live Process Table")
 
-    # Optional filter for easier investigation.
     filter_choice = st.selectbox(
         "Filter processes",
         [
@@ -123,6 +137,8 @@ def live_dashboard():
         "threads",
         "status",
         "anomaly_probability",
+        "anomaly_type",
+        "investigation_explanation",
     ]
 
     available_columns = [
@@ -150,7 +166,8 @@ def live_dashboard():
 
     st.caption(
         "Anomaly is the model's prediction, not proof of malicious activity. "
-        "Warming-up processes need another sample before classification."
+        "The resource category is a heuristic explanation based on deviations "
+        "from normal training data. Warming-up processes need another sample."
     )
 
     st.divider()
@@ -191,12 +208,28 @@ def live_dashboard():
                     "Anomaly probability is not available for this process."
                 )
 
+            st.markdown("#### Member 4 — Anomaly Investigation")
+            st.write(
+                "**Likely resource category:**",
+                process.get("anomaly_type", "Unknown"),
+            )
+            explanation = process.get(
+                "investigation_explanation",
+                "No investigation explanation available.",
+            )
+            st.info(str(explanation))
+
+            resource_details = process.get("resource_details")
+            if resource_details:
+                st.write("**Resource evidence:**")
+                st.write(resource_details)
+
             note = process.get("telemetry_note")
 
             if isinstance(note, str) and note:
-                st.info(note)
+                st.warning(note)
 
-            with st.expander("View complete telemetry"):
+            with st.expander("View complete telemetry and investigation data"):
                 st.json(process.to_dict())
 
     with st.expander("How to interpret the results"):
@@ -207,13 +240,18 @@ def live_dashboard():
             - **Warming up:** The monitor needs another sample.
             - **Anomaly probability:** The probability reported by the model,
               when supported.
-            - **Telemetry notes:** Explain unavailable measurements or
-              other collection limitations.
+            - **Likely resource category:** Member 4's heuristic grouping of
+              unusual CPU, memory, disk, or process-activity measurements.
+            - **Unclassified:** The model detected an anomaly, but the
+              investigation layer could not isolate a resource category.
 
-            A model prediction is not a security verdict. Investigate
-            unusual results before drawing conclusions.
+            The investigation layer compares measurements with a baseline
+            built only from label-0 normal training rows. It is not causal
+            proof and does not determine whether a process is malicious.
+            Investigate unusual results before drawing conclusions.
             """
         )
+
 
 st.divider()
 

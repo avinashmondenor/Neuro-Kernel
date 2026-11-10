@@ -11,3 +11,4 @@ __pycache__/
 backup_before_split_fix/
 src/*.bak
 src/*.before_kthread_fix
+.pytest_cache/

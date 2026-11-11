@@ -1,0 +1,140 @@
+{
+  "project": "NeuroKernel",
+  "member": 5,
+  "generated_at_utc": "2026-11-11T15:29:20.202993+00:00",
+  "model_file": "models/neurokernel_random_forest.pkl",
+  "model_retrained": false,
+  "held_out_model_evaluation": {
+    "test_samples": 68551,
+    "accuracy": 0.7472246940234278,
+    "normal_precision": 0.654199365503423,
+    "normal_recall": 0.7374920001505854,
+    "anomaly_precision": 0.8193804071905921,
+    "anomaly_recall": 0.753381918643422,
+    "anomaly_f1": 0.7849964017172494,
+    "confusion_matrix_labels_0_1": [
+      [
+        19590,
+        6973
+      ],
+      [
+        10355,
+        31633
+      ]
+    ],
+    "true_negative": 19590,
+    "false_positive": 6973,
+    "false_negative": 10355,
+    "true_positive": 31633,
+    "classification_report": {
+      "Normal": {
+        "precision": 0.654199365503423,
+        "recall": 0.7374920001505854,
+        "f1-score": 0.6933531535357825,
+        "support": 26563.0
+      },
+      "Anomaly": {
+        "precision": 0.8193804071905921,
+        "recall": 0.753381918643422,
+        "f1-score": 0.7849964017172494,
+        "support": 41988.0
+      },
+      "accuracy": 0.7472246940234278,
+      "macro avg": {
+        "precision": 0.7367898863470075,
+        "recall": 0.7454369593970036,
+        "f1-score": 0.739174777626516,
+        "support": 68551.0
+      },
+      "weighted avg": {
+        "precision": 0.7553739884609416,
+        "recall": 0.7472246940234278,
+        "f1-score": 0.7494853281888647,
+        "support": 68551.0
+      }
+    }
+  },
+  "live_integration_smoke_test": {
+    "first_scan_processes": 18,
+    "second_scan_processes": 18,
+    "second_scan_predictions_ready": 18,
+    "second_scan_warming_up": 0,
+    "member4_fields_present": true,
+    "missing_fields": [],
+    "sample_predictions": [
+      {
+        "pid": 1,
+        "process_name": "supervisord",
+        "prediction": 1,
+        "status": "Anomaly",
+        "anomaly_type": "Unclassified"
+      },
+      {
+        "pid": 6,
+        "process_name": "log_forwarder",
+        "prediction": 0,
+        "status": "Normal",
+        "anomaly_type": "None"
+      },
+      {
+        "pid": 26,
+        "process_name": "bash",
+        "prediction": 1,
+        "status": "Anomaly",
+        "anomaly_type": "Unclassified"
+      },
+      {
+        "pid": 60,
+        "process_name": "sleep",
+        "prediction": 1,
+        "status": "Anomaly",
+        "anomaly_type": "Unclassified"
+      },
+      {
+        "pid": 230,
+        "process_name": "log_forwarder",
+        "prediction": 1,
+        "status": "Anomaly",
+        "anomaly_type": "Unclassified"
+      },
+      {
+        "pid": 247,
+        "process_name": "log_forwarder",
+        "prediction": 1,
+        "status": "Anomaly",
+        "anomaly_type": "Unclassified"
+      },
+      {
+        "pid": 251,
+        "process_name": "bash",
+        "prediction": 1,
+        "status": "Anomaly",
+        "anomaly_type": "Unclassified"
+      },
+      {
+        "pid": 270,
+        "process_name": "bash",
+        "prediction": 1,
+        "status": "Anomaly",
+        "anomaly_type": "Unclassified"
+      },
+      {
+        "pid": 272,
+        "process_name": "tini",
+        "prediction": 1,
+        "status": "Anomaly",
+        "anomaly_type": "Unclassified"
+      },
+      {
+        "pid": 282,
+        "process_name": "start-server.sh",
+        "prediction": 1,
+        "status": "Anomaly",
+        "anomaly_type": "Unclassified"
+      }
+    ],
+    "note": "Live predictions are a smoke test only. Live processes have no independent ground-truth labels, so this cannot establish live FP/FN."
+  },
+  "errors": [],
+  "overall_status": "PASS"
+}
